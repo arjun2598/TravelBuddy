@@ -1,22 +1,25 @@
-require("dotenv").config();
+require("dotenv").config(); // Loads environment variables from a .env file into process.env
 
-const config = require("./config.json");
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const express = require("express");
-const cors = require("cors");
-const jwt = require("jsonwebtoken");
+const config = require("./config.json"); // Loads configuration settings from config.json
+const mongoose = require("mongoose"); // Imports Mongoose for interacting with MongoDB
+const bcrypt = require("bcrypt"); // Imports bcrypt for password hashing
+const express = require("express"); // Imports Express framework for handling HTTP requests
+const cors = require("cors"); // Imports CORS middleware to allow cross-origin requests
+const jwt = require("jsonwebtoken"); // Imports JWT for authentication and token management
+const upload = require("./multer"); // Imports the Multer configuration for handling file uploads
+const fs = require("fs"); // Imports the File System module for handling files
+const path = require("path"); // Imports the Path module for working with file paths
 
-const { authenticateToken } = require("./utilities");
+const { authenticateToken } = require("./utilities"); // Imports authentication middleware for protected routes
 
-const User = require("./models/user_model");
-const TravelStory = require("./models/travel_story_model");
+const User = require("./models/user_model"); // Imports the User model for database operations
+const TravelStory = require("./models/travel_story_model"); // Imports the TravelStory model for database operations
 
-mongoose.connect(config.connectionString);
+mongoose.connect(config.connectionString); // Connects to MongoDB using the connection string from config.json
 
-const app = express();
-app.use(express.json());
-app.use(cors({ origin: "*" }));
+const app = express(); // Initializes an Express application
+app.use(express.json()); // Enables Express to parse JSON request bodies
+app.use(cors({ origin: "*" })); // Allows cross-origin requests from any domain
 
 // Create account
 app.post("/create-account", async (req, res) => {
@@ -152,11 +155,23 @@ app.get("/get-all-stories", authenticateToken, async (req, res) => {
         const travelStories = await TravelStory.find({ userId: userId }).sort({ isFavourite: -1 }); // -1 for descending order (starts from favourites)
         res.status(200).json({ stories: travelStories });   
     } catch (error) {
-        res.status(500).json({ error: true, message: error.message });
+        res.status(500).json({ error: true, message: error.message }); // 500 is for internal server error
     }
 });
 
+// Route to handle image upload
+app.post("/image-upload", upload.single("image"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: true, message: "No image uploaded" });
+        }
 
+        const imageUrl = `http://localhost:8000/uploads/${req.file.filename}`;
+        res.status(201).json({ imageUrl });
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+}); 
 
-app.listen(8000);
+app.listen(8000); 
 module.exports = app;
