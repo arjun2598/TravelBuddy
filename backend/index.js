@@ -7,6 +7,8 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
+const { authenticateToken } = require("./utilities");
+
 const User = require("./models/user_model");
 
 mongoose.connect(config.connectionString);
@@ -61,16 +63,19 @@ app.post("/create-account", async (req, res) => {
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
+    // Missing field
     if (!email || !password) {
         return res.status(400).json({ message: "Email and Password are required" });
     }
 
+    // Check for registered email
     const user = await User.findOne({ email });
     if (!user) {
         return res.status(400).json({ message: "User not found" });
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    // Check that password matches
+    const isValidPassword = await bcrypt.compare(password, user.password); // salt used is embedded in hash, hence can match passwords
     if (!isValidPassword) {
         return res.status(400).json({ message: "Incorrect Password" });
     }
@@ -91,7 +96,22 @@ app.post("/login", async (req, res) => {
     });
 });
 
+// Get User
+app.get("/get-user", authenticateToken, async (req, res) => {
+    const { userId } = req.user
 
+    const isUser = await User.findOne({ _id: userId });
+
+    // User not found in database
+    if (!isUser) {
+        return res.sendStatus(401)
+    }
+
+    return res.json({
+        user: isUser, 
+        message: "",
+    })
+})
 
 app.listen(8000);
 module.exports = app;
