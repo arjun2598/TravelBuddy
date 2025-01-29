@@ -96,7 +96,7 @@ app.post("/login", async (req, res) => {
     });
 });
 
-// Get User
+// Get user
 app.get("/get-user", authenticateToken, async (req, res) => {
     const { userId } = req.user
 
@@ -108,10 +108,15 @@ app.get("/get-user", authenticateToken, async (req, res) => {
     }
 
     return res.json({
-        user: isUser, 
+        user: isUser,
         message: "",
     })
-})
+});
+
+// Add travel story
+app.get("/add-travel-story", authenticateToken, async (req, res) => {
+    
+});
 
 app.listen(8000);
 module.exports = app;
