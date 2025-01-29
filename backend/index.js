@@ -144,5 +144,19 @@ app.post("/add-travel-story", authenticateToken, async (req, res) => {
     }
 });
 
+// Get all travel stories
+app.get("/get-all-stories", authenticateToken, async (req, res) => {
+    const { userId } = req.user;
+
+    try {
+        const travelStories = await TravelStory.find({ userId: userId }).sort({ isFavourite: -1 }); // -1 for descending order (starts from favourites)
+        res.status(200).json({ stories: travelStories });   
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+});
+
+
+
 app.listen(8000);
 module.exports = app;
