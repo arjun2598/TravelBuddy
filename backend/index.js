@@ -205,7 +205,42 @@ app.get("/get-all-stories", authenticateToken, async (req, res) => {
     }
 });
 
+// Edit travel story
+app.post("/edit-story/:id", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { title, story, visitedLocation, imageUrl, visitedDate } = req.body;
+    const { userId } = req.user;
 
+    // Validate required fields
+    if (!title || !story || !visitedLocation || !imageUrl || !visitedDate) {
+        return res.status(400).json({ error: true, message: "All fields are required" });
+    }
+
+    // Convert visitedDate from milliseconds to Date object
+    const parsedVisitedDate = new Date(parseInt(visitedDate));
+
+    try {
+        // Find travel story by id and ensure it belongs to the authenticated user
+        const travelStory = await TravelStory.findOne({ _id: id, userId: userId });
+
+        if (!travelStory) {
+            return res.status(400).json({ error: true, message: "Travel story not found" });
+        }
+
+        const placeHolderImgUrl = `http://localhost:8000/assets/placeholder.png`; // use placeholder image when no image provided
+
+        travelStory.title = title;
+        travelStory.story = story;
+        travelStory.visitedLocation = visitedLocation;
+        travelStory.imageUrl = imageUrl || placeHolderImgUrl;
+        travelStory.visitedDate = visitedDate;
+
+        await travelStory.save();
+        res.status(200).json({ story: travelStory, message: "Update Successful" });
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+});
 
 app.listen(8000); 
 module.exports = app;
