@@ -162,7 +162,7 @@ app.get("/get-all-stories", authenticateToken, async (req, res) => {
 // Route to handle image upload
 app.post("/image-upload", upload.single("image"), async (req, res) => {
     try {
-        if (!req.file) {
+        if (!req.file) { // No file upload
             return res.status(400).json({ error: true, message: "No image uploaded" });
         }
 
@@ -172,6 +172,10 @@ app.post("/image-upload", upload.single("image"), async (req, res) => {
         res.status(500).json({ error: true, message: error.message });
     }
 }); 
+
+// Serve static files from the uploads and assets directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Allows client to access uploaded files
+app.use("/assets", express.static(path.join(__dirname, "assets"))); 
 
 app.listen(8000); 
 module.exports = app;
