@@ -300,6 +300,31 @@ app.put("/update-is-favourite/:id", authenticateToken, async (req, res) => {
     }
 });
 
+// Search travel stories
+app.get("/search", authenticateToken, async (req, res) => {
+    const { query } = req.query;
+    const { userId } = req.user;
+
+    if (!query) {
+        return res.status(400).json({ error: true, message: "query is required" });
+    }
+
+    try {
+        const searchResults = await TravelStory.find({
+            userId: userId,
+            $or: [ // search for matches in the following
+                { title: { $regex: query, $options: "i" } }, // $regex searches for substrings, $options: "i" makes it case-insensitive
+                { story: { $regex: query, $options: "i" } },
+                { visitedLocation: { $regex: query, $options: "i" } },
+            ],
+        }).sort({ isFavourite: -1 });
+
+        res.status(200).json({ stories: searchResults });
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+});
+
 
 
 app.listen(8000); 
