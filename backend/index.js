@@ -242,5 +242,41 @@ app.post("/edit-story/:id", authenticateToken, async (req, res) => {
     }
 });
 
+// Delete travel story
+app.delete("/delete-story/:id", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { userId } = req.user;
+
+    try {
+        // Find travel story by id and ensure it belongs to the authenticated user
+        const travelStory = await TravelStory.findOne({ _id: id, userId: userId });
+
+        if (!travelStory) {
+            return res.status(400).json({ error: true, message: "Travel story not found" });
+        }
+
+        // Delete travel story from the database
+        await travelStory.deleteOne({ _id: id, userId: userId });
+
+        // Extract filename from the imageUrl
+        const imageUrl = travelStory.imageUrl;
+        const filename = path.basename(imageUrl);
+
+        // Define the file path
+        const filePath = path.join(__dirname, 'uploads', filename);
+
+        // Delete the image file from the uploads folder
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error("Failed to delete image file:", err);
+            }
+        });
+
+        res.status(200).json({ message: "Travel story deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+});
+
 app.listen(8000); 
 module.exports = app;
