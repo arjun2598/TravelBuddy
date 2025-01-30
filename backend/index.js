@@ -108,7 +108,7 @@ app.get("/get-user", authenticateToken, async (req, res) => {
 
     // User not found in database
     if (!isUser) {
-        return res.sendStatus(401)
+        return res.status(404).json({ error: true, message: "User not found" });
     }
 
     return res.json({
@@ -206,7 +206,7 @@ app.get("/get-all-stories", authenticateToken, async (req, res) => {
 });
 
 // Edit travel story
-app.post("/edit-story/:id", authenticateToken, async (req, res) => {
+app.put("/edit-story/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { title, story, visitedLocation, imageUrl, visitedDate } = req.body;
     const { userId } = req.user;
@@ -224,7 +224,7 @@ app.post("/edit-story/:id", authenticateToken, async (req, res) => {
         const travelStory = await TravelStory.findOne({ _id: id, userId: userId });
 
         if (!travelStory) {
-            return res.status(400).json({ error: true, message: "Travel story not found" });
+            return res.status(404).json({ error: true, message: "Travel story not found" });
         }
 
         const placeHolderImgUrl = `http://localhost:8000/assets/placeholder.png`; // use placeholder image when no image provided
@@ -252,7 +252,7 @@ app.delete("/delete-story/:id", authenticateToken, async (req, res) => {
         const travelStory = await TravelStory.findOne({ _id: id, userId: userId });
 
         if (!travelStory) {
-            return res.status(400).json({ error: true, message: "Travel story not found" });
+            return res.status(404).json({ error: true, message: "Travel story not found" });
         }
 
         // Delete travel story from the database
@@ -277,6 +277,30 @@ app.delete("/delete-story/:id", authenticateToken, async (req, res) => {
         res.status(500).json({ error: true, message: error.message });
     }
 });
+
+// Update favourite status
+app.put("/update-is-favourite/:id", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { isFavourite } = req.body;
+    const { userId } = req.user;
+
+    try {
+        const travelStory = await TravelStory.findOne({ _id: id, userId: userId });
+
+        if (!travelStory) {
+            return res.status(404).json({ error: true, message: "Travel story not found" });
+        }
+
+        travelStory.isFavourite = isFavourite;
+
+        await travelStory.save();
+        res.status(200).json({ story: travelStory, message: "Update successful" });
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+});
+
+
 
 app.listen(8000); 
 module.exports = app;
