@@ -37,3 +37,7 @@
 .bg-login-bg-img {
   background-image: url('./assets/images/bg-img.jpg');
 }
+
+.bg-signup-bg-img {
+  background-image: url('./assets/images/signup-bg-img.jpg');
+}
