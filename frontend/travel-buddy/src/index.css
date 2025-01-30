@@ -15,3 +15,25 @@
     overflow-x: hidden;
   }
 }
+
+@layer components {
+  .input-box {
+    @apply w-full text-sm bg-cyan-600/5 rounded px-5 py-3 mb-4 outline-none;
+  }
+
+  .btn-primary {
+    @apply w-full text-sm font-medium text-white bg-cyan-500 shadow-lg shadow-cyan-200/50 p-[10px] rounded-full my-1 hover:bg-cyan-400 hover:cursor-pointer;
+  }
+
+  .btn-light {
+    @apply bg-cyan-50 text-cyan-500 shadow-cyan-100/0 border border-cyan-100 hover:bg-cyan-200;
+  }
+
+  .login-ui-box {
+    @apply w-80 h-[450px] rounded-full bg-cyan-500 absolute rotate-45
+  }
+}
+
+.bg-login-bg-img {
+  background-image: url('./assets/images/bg-img.jpg');
+}
