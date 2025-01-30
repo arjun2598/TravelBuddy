@@ -14,6 +14,7 @@ const { authenticateToken } = require("./utilities"); // Imports authentication 
 
 const User = require("./models/user_model"); // Imports the User model for database operations
 const TravelStory = require("./models/travel_story_model"); // Imports the TravelStory model for database operations
+const { start } = require("repl");
 
 mongoose.connect(config.connectionString); // Connects to MongoDB using the connection string from config.json
 
@@ -325,7 +326,27 @@ app.get("/search", authenticateToken, async (req, res) => {
     }
 });
 
+// Filter stories by date range
+app.get("/travel-stories/filter", authenticateToken, async (req, res) => {
+    const { startDate, endDate } = req.query;
+    const { userId } = req.user;
 
+    try {
+        // Convert start and end dates from milliseconds to Date objects
+        const start = new Date(parseInt(startDate));
+        const end = new Date(parseInt(endDate));
+
+        // Find travel stories belonging to user within the date range
+        const filteredStories = await TravelStory.find({
+            userId: userId,
+            visitedDate: { $gte: start, $lte: end }, // gte for >=, lte for <= 
+        }).sort({ isFavourite: -1 });
+
+        res.status(200).json({ stories: filteredStories });
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+});
 
 app.listen(8000); 
 module.exports = app;
