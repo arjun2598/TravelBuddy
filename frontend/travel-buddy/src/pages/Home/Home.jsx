@@ -3,11 +3,21 @@ import Navbar from '../../components/Navbar';
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import TravelStoryCard from '../../components/Cards/TravelStoryCard';
+import { MdAdd } from 'react-icons/md';
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/ReactToastify.css";
 
 const Home = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   const [allStories, setAllStories] = useState([]);
+
+  const [openAddEditModal, setOpenAddEditModal] = useState({
+    isShown: false,
+    type: "add",
+    data: null,
+  }); 
 
   // Get user info
   const getUserInfo = async () => {
@@ -54,6 +64,9 @@ const Home = () => {
       );
 
       if (response.data && response.data.story) {
+        toast.success("Story Updated Successfully", {
+          autoClose: 1000,
+        });
         getAllTravelStories();
       }
     } catch (error) {
@@ -105,6 +118,17 @@ const Home = () => {
           <div className='w-[320px]'></div>
         </div>
       </div>
+
+      <button 
+        className='w-16 h-16 flex items-center justify-center rounded-full bg-cyan-400 hover:bg-cyan-200 fixed right-10 bottom-10 cursor-pointer'
+        onClick={() => {
+          setOpenAddEditModal({ isShown: true, type: "add", data: null });
+        }}
+      >
+        <MdAdd className='text-[32px] text-white' />
+      </button>
+
+      <ToastContainer />
     </>
   );
 };
