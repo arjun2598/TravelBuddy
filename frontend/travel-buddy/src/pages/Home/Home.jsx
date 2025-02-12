@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import TravelStoryCard from '../../components/Cards/TravelStoryCard';
 import { MdAdd } from 'react-icons/md';
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
+import Modal from 'react-modal';
+import AddEditTravelStory from './AddEditTravelStory';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -118,6 +119,29 @@ const Home = () => {
           <div className='w-[320px]'></div>
         </div>
       </div>
+
+      {/* Add and Edit travel story model */}
+      <Modal
+        isOpen={openAddEditModal.isShown}
+        onRequestClose={() => { }}
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            zIndex: 999,
+          },
+        }}
+        appElement={document.getElementById("root")}
+        className = "model-box scrollbar"
+      >
+        <AddEditTravelStory
+          type={openAddEditModal.type}
+          storyInfo={openAddEditModal.data}
+          onClose={() => {
+            setOpenAddEditModal({ isShown: false, type: "add", data: null });
+          }} 
+          getAllTravelStories={getAllTravelStories}
+        />
+      </Modal>
 
       <button 
         className='w-16 h-16 flex items-center justify-center rounded-full bg-cyan-400 hover:bg-cyan-200 fixed right-10 bottom-10 cursor-pointer'
