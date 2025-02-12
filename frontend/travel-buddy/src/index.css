@@ -41,3 +41,7 @@
 .bg-signup-bg-img {
   background-image: url('./assets/images/signup-bg-img.jpg');
 }
+
+.icon-btn {
+  @apply text-[22px] text-slate-300 cursor-pointer hover:text-red-500
+}

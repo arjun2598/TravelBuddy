@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../../components/Navbar';
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import TravelStoryCard from '../../components/Cards/TravelStoryCard';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -35,6 +36,15 @@ const Home = () => {
     }
   }
 
+  // Handle edit story click
+  const handleEdit = (data) => {}
+  
+  // Handle story click
+  const handleViewStory = (data) => {}
+  
+  // Handle update of favourite
+  const updateIsFavourite = async (storyData) => {}
+
   useEffect(() => {
     getAllTravelStories();
     getUserInfo();
@@ -52,8 +62,31 @@ const Home = () => {
       <div className='container mx-auto py-10'>
         <div className='flex gap-7'>
           <div className='flex-1'>
-            <div className='w-[320px]'></div>
+            {allStories.length > 0 ? (
+              <div className='grid grid-cols-2 gap-4'>
+                {allStories.map((item) => {
+                  return (
+                    <TravelStoryCard
+                      key={item._id}
+                      imgUrl={item.imageUrl}
+                      title={item.title}
+                      story={item.story}
+                      date={item.visitedDate}
+                      visitedLocation={item.visitedLocation}
+                      isFavourite={item.isFavourite}
+                      onEdit={() => handleEdit(item)}
+                      onClick={() => handleViewStory(item)}
+                      onFavouriteClick = {() => updateIsFavourite(item)}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+                <>Empty card here</>
+            )}
           </div>
+
+          <div className='w-[320px]'></div>
         </div>
       </div>
     </>
