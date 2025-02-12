@@ -43,7 +43,23 @@ const Home = () => {
   const handleViewStory = (data) => {}
   
   // Handle update of favourite
-  const updateIsFavourite = async (storyData) => {}
+  const updateIsFavourite = async (storyData) => {
+    const storyId = storyData._id;
+
+    try {
+      const response = await axiosInstance.put("/update-is-favourite/" + storyId,
+        {
+          isFavourite: !storyData.isFavourite,
+        }
+      );
+
+      if (response.data && response.data.story) {
+        getAllTravelStories();
+      }
+    } catch (error) {
+      console.log("An unexpected error occurred. Please try again.");
+    }
+  }
 
   useEffect(() => {
     getAllTravelStories();

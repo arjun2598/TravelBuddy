@@ -43,5 +43,5 @@
 }
 
 .icon-btn {
-  @apply text-[22px] text-slate-300 cursor-pointer hover:text-red-500
+  @apply text-[22px] cursor-pointer hover:text-red-500
 }
