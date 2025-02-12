@@ -6,6 +6,7 @@ import axiosInstance from "../../utils/axiosInstance";
 const Home = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
+  const [allStories, setAllStories] = useState([]);
 
   // Get user info
   const getUserInfo = async () => {
@@ -22,7 +23,20 @@ const Home = () => {
     }
   };
 
-useEffect(() => {
+  // Get all travel stories
+  const getAllTravelStories = async () => {
+    try {
+      const response = await axiosInstance.get("/get-all-stories");
+      if (response.data && response.data.stories) {
+        setAllStories(response.data.stories);
+      }
+    } catch (error) {
+      console.log("An unexpected error occured. Please try again.");
+    }
+  }
+
+  useEffect(() => {
+    getAllTravelStories();
     getUserInfo();
   
     return () => {
@@ -34,6 +48,14 @@ useEffect(() => {
   return (
     <>
       <Navbar userInfo={userInfo} />
+
+      <div className='container mx-auto py-10'>
+        <div className='flex gap-7'>
+          <div className='flex-1'>
+            <div className='w-[320px]'></div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
