@@ -6,6 +6,13 @@
 @tailwind utilities;
 
 @layer base {
+  .rdp-root {
+      --rdp-accent-color: #01B0CB !important;
+      --rdp-accent-background-color: #dffbff !important;
+      --rdp-day_button-border-radius: 8px !important;
+      --rdp-selected-font: bold medium var(--rdp-font-family) !important;
+  }
+
   html {
     font-family: "Poppins", "sans-serif";
   }
